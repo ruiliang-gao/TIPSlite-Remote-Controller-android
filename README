@@ -1,4 +1,4 @@
-* Issues / Some useful notes *
+Issues / Some useful notes
 
 ## SOFA SERVER SIDE (C++):
 
@@ -20,7 +20,7 @@
     4. For UDP server, we must use "SOCK_DGRAM" and "IPPROTO_UDP" in the following socket function, default will be TCP;
     	server = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); 
 
-    5. c2678 :binary '==' no operator found which takes a left-hand operand of type
+    5. Error c2678 :binary '==' no operator found which takes a left-hand operand of type
     	solution: Stop using "using namespace std" statements once and for all, this "bind()" conflicts with the STL std::bind function.
 
     6. Issue : c++ main thread been blocked by the server
@@ -35,27 +35,27 @@
 
 ## Android CLIENT SIDE(java):
 
-  1. Android Earth Coords: East-North-Up coordinates.
-    Android rotation vector sensor return value[5] : (qx, qy, qz, qw, accuracy)
-    // values[0]: x*sin(&#952/2)
-    // values[1]: y*sin(&#952/2)
-    // values[2]: z*sin(&#952/2)
-    // values[3]: cos(&#952/2)
-    // values[4]: estimated heading Accuracy (in radians) (-1 if unavailable)
+    1. Android Earth Coords: East-North-Up coordinates.
+        Android rotation vector sensor return value[5] : (qx, qy, qz, qw, accuracy)
+        // values[0]: x*sin(&#952/2)
+        // values[1]: y*sin(&#952/2)
+        // values[2]: z*sin(&#952/2)
+        // values[3]: cos(&#952/2)
+        // values[4]: estimated heading Accuracy (in radians) (-1 if unavailable)
 
-  2.Features-list
-	(done)figure out Quaternion!!!!!
-		vecToolTipDirectionInSOFA = androidQuat * (correctionQuat?) * initialCameraViewQuat * defaultToolTipDirectionVector;
-		figure out initialCameraViewQuat...
-	(done) figure out how to switch between udp and HD (for now HD does not respond when udp is active)
-	(done) two-way communicatio: vibration on the phone when collide in SOFA
-	(done) set ActionButton to be the Hardware VolumeControl Button
-    (done) prevent multi-touch 
-    (done) independent aspect ratio 
-    (done) gesture based start detection
-     obtain and transfer the ip info in an more automatic way.
+    2.Features-list
+        (done)figure out Quaternion!!!!!
+            vecToolTipDirectionInSOFA = androidQuat * (correctionQuat?) * initialCameraViewQuat * defaultToolTipDirectionVector;
+            figure out initialCameraViewQuat...
+        (done) figure out how to switch between udp and HD (for now HD does not respond when udp is active)
+        (done) two-way communicatio: vibration on the phone when collide in SOFA
+        (done) set ActionButton to be the Hardware VolumeControl Button
+        (done) prevent multi-touch
+        (done) independent aspect ratio
+        (done) gesture based start detection
+            obtain and transfer the ip info in an more automatic way.
 
-  3. win10 IP/Port instruction:
-	Run the windows "cmd" as administrator
-	To find ipv4 address: ipconfig | findstr /R /C:"IPv4 Address"
-	To open a port: netsh advfirewall firewall add rule name="TIPS Port 5556" dir=in action=allow protocol=UDP localport=5556
+    3. win10 IP/Port instruction:
+        Run the windows "cmd" as administrator
+        To find ipv4 address: ipconfig | findstr /R /C:"IPv4 Address"
+        To open a port: netsh advfirewall firewall add rule name="TIPS Port 5556" dir=in action=allow protocol=UDP localport=5556
