@@ -125,14 +125,18 @@ public class MainActivity extends AppCompatActivity {
                     mSensorQuat = new Quaternion(event.values[3], event.values[0], event.values[1], event.values[2]);
                     if(mCalibrated) {
                         mQuat = mCalibrateQuat.times(mSensorQuat);
-                        /// Gesture detection -- flip up/down
+                        /// Gesture detection
                         if(mFlipDown == 0 && Math.abs(mQuat.x2) > 0.92){
                             mFlipDown = 1;
-                            mStartButton.performClick();
+                            //Log.d("TIPS_Motion sensor", "Device flipped down");
+                            if (!mStreamActive)
+                                mStartButton.performClick();
                         }
                         else if(mFlipDown == 1 && Math.abs(mQuat.x2) < 0.08){
                             mFlipDown = 0;
-                            mStartButton.performClick();
+                            //Log.d("TIPS_Motion sensor", "Device flipped up");
+                            if (mStreamActive)
+                                mStartButton.performClick();
                         }
                     }
                     else
@@ -303,17 +307,19 @@ public class MainActivity extends AppCompatActivity {
         mIP_Address.setEnabled(false);
         mPort.setEnabled(false);
         mToggleDevice.setEnabled(false);
-        mStreamStatus.setText(getString(R.string.stream_status_on));
+        //mStreamStatus.setText(getString(R.string.calibrate_status_done));
         mInstructionText.setTextColor(Color.LTGRAY);
+        mCalibrateButton.setEnabled(false);
         return true;
     }
 
     private void stopStreaming() {
-        mStreamStatus.setText(getString(R.string.stream_status_off));
+        mStreamStatus.setText(getString(R.string.calibrate_status_redo));
         mListeningActive = false;
         mIP_Address.setEnabled(true);
         mPort.setEnabled(true);
         mToggleDevice.setEnabled(true);
+        mCalibrateButton.setEnabled(true);
         mInstructionText.setTextColor(Color.DKGRAY);
         if (mSocket != null)
             mSocket.close();
@@ -381,10 +387,16 @@ public class MainActivity extends AppCompatActivity {
         String port = mPrefs.getString("port","");
         if(! ip.isEmpty()) mIP_Address.setText(ip);
         if(! port.isEmpty())  mPort.setText(port);
+
         mStreamStatus = findViewById(R.id.textViewStreamState);
+        mStreamStatus.setText(R.string.calibrate_status_init);
         mInstructionText = findViewById(R.id.textInstruction);
         mInstructionText.setTextColor(Color.DKGRAY);
         mStartButton = findViewById(R.id.start_button);
+
+        mStartButton.setVisibility(View.GONE);/// set invisible since we are using gesture based
+        //mStreamStatus.setVisibility(View.GONE);
+
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -416,6 +428,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mTIPSSensor.mCalibrateQuat = mTIPSSensor.mSensorQuat.inverse();
                 mTIPSSensor.mCalibrated = true;
+                mCalibrateButton.setText(R.string.button_recalibrate);
+                mStreamStatus.setText(R.string.calibrate_status_done);
                 Log.d(TAG, "calibrated...");
             }
         });
