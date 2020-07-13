@@ -2,12 +2,13 @@
     <string name="app_name">TIPS Controller</string>
     <string name="app_version">v1.0</string>
     <string name="welcome_msg">Welcome to TIPS Controller</string>
-    <string name="rotation_vec">Rotation Vect.</string>
+    <string name="rotation_vec">Rotation</string>
     <string name="surflab_logo">SurfLab Logo</string>
-    <string name="instruction1">Setup Guide:\n \n 1. Enter your PC server ip address and port number.\n \n
-        2. Start the simulation (SPACEBAR) in SOFA on your PC \n \n
-        3. Point your phone to your PC screen and click CALIBRATE button \n \n
-        4. Select Instrument 1 or 2, then Flip over your phone (facing down) to start.
+    <string name="instruction1">Setup Guide:\n \n 1. Make sure you PC and cellphone are connected to the same network. \n \n
+        2. Enter your PC server ip address and port number ( Refer to SOFA/myIpAddress.txt on your PC ).\n \n
+        3. Start the simulation (SPACEBAR) in SOFA on your PC \n \n
+        4. Point your phone to your PC screen and click CALIBRATE button \n \n
+        5. Select Instrument 1 or 2, then Flip over your phone (facing down) to start.
         </string>
     <string name="instruction2">HowtoCalibrate</string>
     <string name="instruction3">HowToUseTheController</string>
@@ -17,6 +18,7 @@
     <string name="button_stop">STOP</string>
     <string name="instrument_1">INSTRUMENT 1</string>
     <string name="instrument_2">INSTRUMENT 2</string>
+    <string name="vibration_str">Vibration Strength: </string>
     <string-array name="spinner_array">
         <item >Fastest</item>
         <item >Fast</item>

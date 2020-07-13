@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private TIPSSensor mTIPSSensor;
     private String mSensordata;
+    private SeekBar mVibrationBar;
+    private int mVibrationStrength = 20;
     StringBuilder mStrBuilder = new StringBuilder(256);
     String TAG = "TIPSSensor_tag";
 
@@ -212,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                     //int strength = Integer.parseInt(quote.substring(7));
                     //Log.d("TIPS_Controller ", " Vibrator starts with strength"+strength);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mSysVibrator.vibrate(VibrationEffect.createOneShot(300, 10/*VibrationEffect.DEFAULT_AMPLITUDE*/));
+                        mSysVibrator.vibrate(VibrationEffect.createOneShot(300, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
                     } else { //deprecated in API 26
                         mSysVibrator.vibrate(300);
                     }
@@ -310,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
         //mStreamStatus.setText(getString(R.string.calibrate_status_done));
         mInstructionText.setTextColor(Color.LTGRAY);
         mCalibrateButton.setEnabled(false);
+        mVibrationBar.setEnabled(false);
         return true;
     }
 
@@ -320,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
         mPort.setEnabled(true);
         mToggleDevice.setEnabled(true);
         mCalibrateButton.setEnabled(true);
+        mVibrationBar.setEnabled(true);
         mInstructionText.setTextColor(Color.DKGRAY);
         if (mSocket != null)
             mSocket.close();
@@ -381,21 +386,34 @@ public class MainActivity extends AppCompatActivity {
         mIP_Address.bringToFront();
         mPort.bringToFront();
 
-        /// retrieve from mPrefs
-        mPrefs = getSharedPreferences("serverInfo", Context.MODE_PRIVATE);
-        String ip = mPrefs.getString("ip","");
-        String port = mPrefs.getString("port","");
-        if(! ip.isEmpty()) mIP_Address.setText(ip);
-        if(! port.isEmpty())  mPort.setText(port);
-
         mStreamStatus = findViewById(R.id.textViewStreamState);
         mStreamStatus.setText(R.string.calibrate_status_init);
         mInstructionText = findViewById(R.id.textInstruction);
         mInstructionText.setTextColor(Color.DKGRAY);
         mStartButton = findViewById(R.id.start_button);
+        mVibrationBar = findViewById(R.id.seekBarVibration);
+        mVibrationBar.bringToFront();
+        mVibrationBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mVibrationStrength = progress;
+                mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putInt("vibration_str", progress);
+                editor.apply();
+                Log.d(TAG, "onProgressChanged: "+mVibrationStrength);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
         mStartButton.setVisibility(View.GONE);/// set invisible since we are using gesture based
-        //mStreamStatus.setVisibility(View.GONE);
 
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -408,7 +426,7 @@ public class MainActivity extends AppCompatActivity {
                         mStartButton.setText(R.string.button_stop);
                     }
                     /// store the ipAddr and port# to sharedPref
-                    mPrefs = getSharedPreferences("serverInfo", Context.MODE_PRIVATE);
+                    mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = mPrefs.edit();
                     editor.putString("ip", mIP_Address.getText().toString());
                     editor.putString("port", mPort.getText().toString());
@@ -450,6 +468,15 @@ public class MainActivity extends AppCompatActivity {
 
         mTouchView = (TIPSTouchView) findViewById(R.id.touch_view);
         mSysVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        /// retrieve the saved INFO from mPrefs
+        mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
+        String ip = mPrefs.getString("ip","");
+        String port = mPrefs.getString("port","");
+        mVibrationStrength = mPrefs.getInt("vibration_str", 20);
+        mVibrationBar.setProgress(mVibrationStrength);
+        if(! ip.isEmpty()) mIP_Address.setText(ip);
+        if(! port.isEmpty())  mPort.setText(port);
 
     }
 

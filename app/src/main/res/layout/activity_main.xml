@@ -45,6 +45,10 @@
         android:id="@+id/textInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="1dp"
         android:fontFamily="sans-serif-black"
         android:text="@string/instruction1"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,7 +56,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPortNum"
-        app:layout_constraintVertical_bias="0.244" />
+        app:layout_constraintVertical_bias="0.35" />
 
     <EditText
         android:id="@+id/editTextTextIPAddress"
@@ -173,6 +177,7 @@
         android:background="#25979793"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -200,5 +205,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableRow"
         app:layout_constraintVertical_bias="0.001" />
+
+    <TextView
+        android:id="@+id/textVibration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vibration_str"
+        app:layout_constraintBottom_toTopOf="@+id/textInstruction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.063"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calibrate_button"
+        app:layout_constraintVertical_bias="0.031" />
+
+    <SeekBar
+        android:id="@+id/seekBarVibration"
+        android:layout_width="150dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:max="120"
+        android:progress="20"
+        app:layout_constraintBottom_toBottomOf="@+id/textVibration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.016"
+        app:layout_constraintStart_toEndOf="@+id/textVibration"
+        app:layout_constraintTop_toBottomOf="@+id/calibrate_button"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
