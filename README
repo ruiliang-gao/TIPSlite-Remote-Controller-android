@@ -8,7 +8,7 @@
         
             * manually open "cmd.exe" and run the following command to get the specified IpAddress, 
         
-                **ipconfig | findstr /R /C:"IPv4 Address"**
+                ipconfig | findstr /R /C:"IPv4 Address"
                 
             * If you get more than one ip address, ignore the ones start with "192.xxx..."
             
@@ -20,15 +20,13 @@
 
     2. Install Python 2.7 : https://www.python.org/downloads/release/python-2718/
 
-    3. Install Haptic Device Drivers and SDK from : 
+    3. Install Haptic Device Drivers and SDK from (reboot may be required after installation): 
     
         https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing
         
         https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing
 
     4. Install TIPS Android controller to your cellphone and follow the instruction in the APP: https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk
-
-
 
 
 
