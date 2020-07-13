@@ -1,4 +1,37 @@
-Issues / Some useful notes
+## Set-up instruction / Troubleshooting tips:
+
+    1. Install SOFA from : https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing
+    
+        Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
+        
+            * disable the windows firewall and reinstall SOFA
+        
+            * manually open "cmd.exe" and run the following command to get the specified myIpAddress, 
+        
+            ipconfig | findstr /R /C:"IPv4 Address"
+            
+        Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
+
+            * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher, you need to set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
+
+            * Solution 2: You also need to update the driver of your graphics card to the latest version. Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
+
+    2. Install Python 2.7 : https://www.python.org/downloads/release/python-2718/
+
+    3. Install Haptic Device Drivers and SDK from : 
+    
+        https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing
+        
+        https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing
+
+    4. Install TIPS Android controller to your cellphone and follow the instruction in the APP: https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk
+
+
+
+
+
+
+**Issues / Some useful notes for programmers**
 
 ## SOFA SERVER SIDE (C++):
 
