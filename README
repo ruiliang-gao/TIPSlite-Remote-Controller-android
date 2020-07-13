@@ -6,9 +6,11 @@
         
             * disable the windows firewall and reinstall SOFA
         
-            * manually open "cmd.exe" and run the following command to get the specified myIpAddress, 
+            * manually open "cmd.exe" and run the following command to get the specified IpAddress, 
         
-            ipconfig | findstr /R /C:"IPv4 Address"
+                **ipconfig | findstr /R /C:"IPv4 Address"**
+                
+            * If you get more than one ip address, ignore the ones start with "192.xxx..."
             
         Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
 
@@ -32,6 +34,7 @@
 
 
 **Issues / Some useful notes for programmers**
+------------------------------------------------
 
 ## SOFA SERVER SIDE (C++):
 
