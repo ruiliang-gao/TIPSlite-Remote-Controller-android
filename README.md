@@ -1,6 +1,6 @@
 ## Set-up instruction / Troubleshooting tips:
 
-    1. Install SOFA from : [link to SOFA installer](https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing)
+    1. Install SOFA from : <https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing>
     
         Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
         
