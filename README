@@ -1,6 +1,6 @@
 ## Set-up instruction / Troubleshooting tips:
 
-    1. Install SOFA from : https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing
+    1. Install SOFA from : [link to SOFA installer](https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing)
     
         Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
         
@@ -18,17 +18,17 @@
 
             * Solution 2: You also need to update the driver of your graphics card to the latest version. Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
 
-    2. Install Python 2.7 : https://www.python.org/downloads/release/python-2718/
+    2. Install Python 2.7 : [link to Python download](https://www.python.org/downloads/release/python-2718/)
 
     3. Install Haptic Device Drivers and SDK from (reboot may be required after installation): 
     
-        https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing
+        [link to openhaptics] (https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing)
         
-        https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing
+        [link to haptic drivers] (https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing)
 
     4. Install TIPS Android controller to your cellphone and follow the instruction in the APP: 
     
-        https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk
+        [link to the APP apk](https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk)
 
 
 
