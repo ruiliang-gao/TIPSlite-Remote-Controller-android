@@ -1,34 +1,34 @@
-## Set-up instruction / Troubleshooting tips:
+# Set-up instruction / Troubleshooting tips:
 
-    1. Install SOFA from : [link to SOFA installer](https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing)
+* Install SOFA from [SOFA installer](https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing)
+
+    * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
+
+        * disable the windows firewall and reinstall SOFA
+
+        * manually open "cmd.exe" and run the following command to get the specified IpAddress, 
+
+            ipconfig | findstr /R /C:"IPv4 Address"
+
+        * If you get more than one ip address, ignore the ones start with "192.xxx..."
+
+    * Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
+
+        * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher, you need to set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
+
+        * Solution 2: You also need to update the driver of your graphics card to the latest version. Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
+* Install Python 2.7 
+    * [Python download](http://www.python.org/downloads/release/python-2718/)
+
+* Install Haptic Device Drivers and SDK from (reboot may be required after installation): 
     
-        Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
+    * [openHaptics] (https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing)
         
-            * disable the windows firewall and reinstall SOFA
-        
-            * manually open "cmd.exe" and run the following command to get the specified IpAddress, 
-        
-                ipconfig | findstr /R /C:"IPv4 Address"
-                
-            * If you get more than one ip address, ignore the ones start with "192.xxx..."
-            
-        Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
+    * [haptic drivers] (https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing)
 
-            * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher, you need to set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
-
-            * Solution 2: You also need to update the driver of your graphics card to the latest version. Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
-
-    2. Install Python 2.7 : [link to Python download](https://www.python.org/downloads/release/python-2718/)
-
-    3. Install Haptic Device Drivers and SDK from (reboot may be required after installation): 
+* Install TIPS Android controller to your cellphone and follow the instruction in the APP: 
     
-        [link to openhaptics] (https://drive.google.com/file/d/1geOE_uqyYM-YhK-RGJ1CYc-jjD-zmTN7/view?usp=sharing)
-        
-        [link to haptic drivers] (https://drive.google.com/file/d/1kQlm0aenXD2Lp-IOLL8qQ5KQW0fo3Z6u/view?usp=sharing)
-
-    4. Install TIPS Android controller to your cellphone and follow the instruction in the APP: 
-    
-        [link to the APP apk](https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk)
+    * [APP download](https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk)
 
 
 
