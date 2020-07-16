@@ -1,6 +1,8 @@
-# Set-up instruction / Troubleshooting tips:
+# Set-up instruction for SOFA and TIPS Android controller
 
-* Install SOFA from [SOFA installer](https://drive.google.com/file/d/1ppqihNhz5A3ceQd1tA7EFj7oaVzfOdth/view?usp=sharing)
+* Make sure your phone and PC are connected to the same network(WIFI) before the following steps.
+
+* Install SOFA from [SOFA_installer_July2020](https://drive.google.com/file/d/13uaPCm1XqhcCetg7jfSVkG86YoO_NraW/view?usp=sharing)
 
     * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
 
@@ -14,9 +16,12 @@
 
     * Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
 
-        * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher, you need to set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
+        * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher,you need to 
+        set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
 
-        * Solution 2: You also need to update the driver of your graphics card to the latest version. Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
+        * Solution 2: You also need to update the driver of your graphics card to the latest version. 
+        Open Device Manager -> Click Display adapaters -> Right Click on your graphics card and Update Driver Software
+
 * Install Python 2.7 
     * [Python download](http://www.python.org/downloads/release/python-2718/)
 
@@ -30,8 +35,12 @@
     
     * [APP download](https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk)
 
-
-
+* Prepare the scenes:
+    * Download the scene file below, open it using any text editor and search for the keyoword "inServerIPAddr", then 
+    replace the ip address after this keyword by your ip address as in the above step. There are two in the scene file to be replaced.
+    
+    * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/LapChole-Android.scn
+    * Lap Appendectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/LapAppendec_-_Android.scn
 
 **Issues / Some useful notes for programmers**
 ------------------------------------------------
@@ -50,8 +59,8 @@
     	in visual studio, just add "ws2_32.lib" to the linker
 
     3. Issue : Redefinition Header Files (winsock2.h)
-    	The problem is when windows.h is included before WinSock2.h as windows.h includes winsock.h. The simple solution is to use winsock.h instead.
-    	see https://stackoverflow.com/questions/1372480/c-redefinition-header-files-winsock2-h/3253327
+    	The problem is when windows.h is included before WinSock2.h as windows.h includes winsock.h. The simple solution is to 
+        use winsock.h instead.see https://stackoverflow.com/questions/1372480/c-redefinition-header-files-winsock2-h/3253327
 
     4. For UDP server, we must use "SOCK_DGRAM" and "IPPROTO_UDP" in the following socket function, default will be TCP;
     	server = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); 
