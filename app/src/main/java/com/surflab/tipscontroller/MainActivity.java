@@ -31,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -366,6 +367,8 @@ public class MainActivity extends AppCompatActivity {
         checkPermission(Manifest.permission.VIBRATE, VIBRATE_PERMISSION_CODE);
         checkPermission(Manifest.permission.ACCESS_NETWORK_STATE, ACCESS_NETWORK_STATE_PERMISSION_CODE);
         checkPermission(Manifest.permission.ACCESS_WIFI_STATE, ACCESS_WIFI_STATE_PERMISSION_CODE);
+        //Keep the screen always on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     //TODO (should change the thread structure later to move the thread to an non-GUI activity)
         //remove the restriction so that we can run network operations on the main thread
