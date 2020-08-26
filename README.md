@@ -2,7 +2,7 @@
 
 * Make sure your phone and PC are connected to the same network(WIFI) before the following steps.
 
-* Install SOFA from [SOFA_installer_July2020](https://drive.google.com/file/d/13uaPCm1XqhcCetg7jfSVkG86YoO_NraW/view?usp=sharing)
+* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1sSXHbxEtGmmSUO2YTxfYJXka2jMdLn9b/view?usp=sharing)
 
     * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
 
