@@ -19,6 +19,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!mStreamActive)
                                 mStartButton.performClick();
                         }
-                        else if(mFlipDown == 1 && Math.abs(mQuat.x2) < 0.08){
+                        else if(mFlipDown == 1 && Math.abs(mQuat.x2) < 0.1){
                             mFlipDown = 0;
                             //Log.d("TIPS_Motion sensor", "Device flipped up");
                             if (mStreamActive)
@@ -165,8 +166,12 @@ public class MainActivity extends AppCompatActivity {
                         //mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mDeviceID, mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mSensordata = mStrBuilder.toString();
-                        //Log.d("TIPS_Motion sensor", " : (" +mSensordata + ")");
+                        if(mButtonState == 3) {
+                            Log.d(TAG, " : (" +mSensordata + ")");
+                            mButtonState = 0;//reset the calibrate button event
+                        }
                         send();
+
                     }
                     break;
 
@@ -449,6 +454,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mTIPSSensor.mCalibrateQuat = mTIPSSensor.mSensorQuat.inverse();
                 mTIPSSensor.mCalibrated = true;
+                mButtonState = 3;
                 mCalibrateButton.setText(R.string.button_recalibrate);
                 mStreamStatus.setText(R.string.calibrate_status_done);
                 Log.d(TAG, "calibrated...");
