@@ -1,11 +1,13 @@
 package com.surflab.tipscontroller;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -19,8 +21,12 @@ public class TIPSTouchView extends View {
     private Paint paint = new Paint();
     private Path path = new Path();
 
+    private int mDeviceHeight;
+    private int mDeviceWidth;
+
     public float motionY = 0; //length moved along Y axis, positive->slide down, negative->slide up
     public float motionX = 0; //length moved along X axis, positive->slide right, negative->slide left
+    public boolean isOnTouch;
     public void resetMotionXY()
     {
         motionY = 0;
@@ -40,6 +46,12 @@ public class TIPSTouchView extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        mDeviceHeight = displayMetrics.heightPixels;
+        mDeviceWidth = displayMetrics.widthPixels;
+        isOnTouch = false;
+        Log.d("TIPSTouchView created", " H,W: (" + mDeviceHeight + "," + mDeviceWidth + ")");
     }
 
     public void setColor(int r, int g, int b) {
@@ -82,23 +94,25 @@ public class TIPSTouchView extends View {
             case MotionEvent.ACTION_DOWN:
                 path.reset();
                 path.moveTo(eventX, eventY);
-                //Log.d("TIPS_Motion_Down", " at: (" + eventX + "," + eventY + ")");
+                Log.d("TIPSTouchView", " down at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
+                isOnTouch = true;
                 lastX = eventX;
                 lastY = eventY;
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                //Log.d("TIPS_Motion_Move", " to: (" + eventX + "," + eventY + ")");
+//                Log.d("TIPSTouchView move", " to: (" + eventX + "," + eventY + ")");
                 path.lineTo(eventX, eventY);
-                motionX += eventX - lastX;
-                motionY += eventY - lastY;
+                motionX += (eventX - lastX) / mDeviceWidth;
+                motionY += (eventY - lastY) / mDeviceHeight;
                 lastX = eventX;
                 lastY = eventY;
                 break;
 
             case MotionEvent.ACTION_UP:
-                //Log.d("TIPS_Motion_Up", " at: (" + eventX + "," + eventY + ")");
-                //Log.d("TIPS_Motion vector", " : (" + motionX + "," + motionY + ")");
+                isOnTouch = false;
+                Log.d("TIPSTouchView", " up at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
+                Log.d("TIPS_Motion vector", " : (" + motionX + "," + motionY + ")");
                 resetMotionXY();
                 break;
 
