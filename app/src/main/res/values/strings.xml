@@ -4,11 +4,11 @@
     <string name="welcome_msg">Welcome to TIPS Controller</string>
     <string name="rotation_vec">Rotation</string>
     <string name="surflab_logo">SurfLab Logo</string>
-    <string name="instruction1">Setup Guide:\n \n 1. Make sure you PC and cellphone are connected to the same network. \n \n
+    <string name="instruction1">Setup Guide:\n \n 1. Make sure you PC and cellphone are connected to the same network(WiFi). \n \n
         2. Enter your PC server ip address and port number ( Refer to SOFA/myIpAddress.txt on your PC ).\n \n
         3. Start the simulation (SPACEBAR) in SOFA on your PC \n \n
         4. Point your phone to your PC screen and click CALIBRATE button \n \n
-        5. Select Instrument 1 or 2, then Flip over your phone (facing down) to start.
+        5. Select Instrument 1 (or 2), then Flip over your phone (facing down) and touch the stylus to start.
         </string>
     <string name="instruction2">HowtoCalibrate</string>
     <string name="instruction3">HowToUseTheController</string>

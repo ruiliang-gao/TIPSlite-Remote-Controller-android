@@ -180,6 +180,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
+        android:checked="false"
         android:textOff="@string/instrument_2"
         android:textOn="@string/instrument_1"
         app:layout_constraintBottom_toBottomOf="@+id/editTextTextIPAddress"

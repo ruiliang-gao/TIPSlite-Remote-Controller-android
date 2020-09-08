@@ -94,32 +94,36 @@ public class TIPSTouchView extends View {
             case MotionEvent.ACTION_DOWN:
                 path.reset();
                 path.moveTo(eventX, eventY);
-                Log.d("TIPSTouchView", " down at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
+                motionX = eventX / mDeviceWidth;
+                motionY = eventY / mDeviceHeight;
+                //Log.d("TIPSTouchView", " down at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
                 isOnTouch = true;
-                lastX = eventX;
-                lastY = eventY;
+                //lastX = eventX;
+                //lastY = eventY;
                 return true;
 
             case MotionEvent.ACTION_MOVE:
 //                Log.d("TIPSTouchView move", " to: (" + eventX + "," + eventY + ")");
                 path.lineTo(eventX, eventY);
-                motionX += (eventX - lastX) / mDeviceWidth;
-                motionY += (eventY - lastY) / mDeviceHeight;
-                lastX = eventX;
-                lastY = eventY;
+                motionX = eventX / mDeviceWidth;
+                motionY = eventY / mDeviceHeight;
+//                motionX += (eventX - lastX) / mDeviceWidth;
+//                motionY += (eventY - lastY) / mDeviceHeight;
+                //Log.d("TIPS_Motion vector", " : (" + motionX + "," + motionY + ")");
+                //lastX = eventX;
+                //lastY = eventY;
                 break;
 
             case MotionEvent.ACTION_UP:
                 isOnTouch = false;
-                Log.d("TIPSTouchView", " up at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
-                Log.d("TIPS_Motion vector", " : (" + motionX + "," + motionY + ")");
-                resetMotionXY();
+//                Log.d("TIPSTouchView", " up at: (" + eventX/mDeviceWidth + "," + eventY/mDeviceHeight + ")");
+//                Log.d("TIPS_Motion vector", " : (" + motionX + "," + motionY + ")");
+                //resetMotionXY();
                 break;
 
             default:
                 return false;
         }
-        // for demo purposes
         //mGestureDetector.onTouchEvent(event);
         // Schedules a repaint.
         invalidate();

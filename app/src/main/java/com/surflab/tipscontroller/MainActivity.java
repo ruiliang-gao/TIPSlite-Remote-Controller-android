@@ -158,20 +158,20 @@ public class MainActivity extends AppCompatActivity {
 //                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", event.values[3]));
                     }
 
-                    if(mStreamActive){
+                    if(mStreamActive && mTouchView.isOnTouch){
                         //Wrap up the sensor message in format (id, button, motion, orientation)
-                        mMotionStateY = mTouchView.motionY;
-                        mMotionStateX = (float)-1.0 * mTouchView.motionX;
-                        mTouchView.resetMotionXY();
+                        mMotionStateY = (float)mTouchView.motionY;
+                        mMotionStateX = (float)mTouchView.motionX * (-1);
+                        //mTouchView.resetMotionXY();
                         //mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
-                        mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mDeviceID, mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
+                        mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %d, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", mDeviceID, mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mSensordata = mStrBuilder.toString();
                         if(mButtonState == 3) {
                             Log.d(TAG, " : (" +mSensordata + ")");
                             mButtonState = 0;//reset the calibrate button event
                         }
+//                        Log.d(TAG, " : (" +mSensordata + ")");
                         send();
-
                     }
                     break;
 
@@ -521,6 +521,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        if(mStreamActive) {
+            stopStreaming();
+        }
         Log.d(TAG, "onPause");
     }
 
@@ -528,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if(mStreamActive) {
-            //stopStreaming();
+            stopStreaming();
         }
         Log.d(TAG, "onStop");
     }
