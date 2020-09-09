@@ -2,7 +2,7 @@
 
 * Make sure your phone and PC are connected to the same network(WIFI) before the following steps.
 
-* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1sSXHbxEtGmmSUO2YTxfYJXka2jMdLn9b/view?usp=sharing)
+* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/12FzDui_Kvkw1QENE-8Whh5OyO0LxuxGd/view?usp=sharing)
 
     * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
 
@@ -39,7 +39,7 @@
     * Download the scene file below, open it using any text editor and search for the keyoword "inServerIPAddr", then 
     replace the ip address after this keyword by your ip address as in the above step. There are two in the scene file to be replaced.
     
-    * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/LapChole-Android.scn
+    * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/lapChole_Sep08.scn
     * Lap Appendectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/LapAppendec_-_Android.scn
 
 **Issues / Some useful notes for programmers**
