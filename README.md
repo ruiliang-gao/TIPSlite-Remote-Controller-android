@@ -2,7 +2,7 @@
 
 * Make sure your phone and PC are connected to the same network(WIFI) before the following steps.
 
-* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1jeCPuuc761pwe0Nb8wc0wNlOAy03TAo5/view?usp=sharing)
+* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1jeCPuuc761pwe0Nb8wc0wNlOAy03TAo5/view?usp=sharing) (right click and 'run as admin' to install)
 
     * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
 
@@ -41,7 +41,8 @@
     
     * Lap Appendectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Appendect_Sep15.scn
     * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/LapChole_android.scn
-    * Lap Adrenalectomy: 
+    * Lap Adrenalectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Adrenalectomy-android.scn
+    * Lap Hepatectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Hepatectomy-android.scn
 
 **Issues / Some useful notes for programmers**
 ------------------------------------------------
