@@ -1,4 +1,4 @@
-package com.surflab.tipscontroller;
+package com.example.tips;
 
 import android.app.Activity;
 import android.content.Context;

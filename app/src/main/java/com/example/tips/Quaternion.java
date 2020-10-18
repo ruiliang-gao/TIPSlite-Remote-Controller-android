@@ -1,4 +1,4 @@
-package com.surflab.tipscontroller;
+package com.example.tips;
 
 public class Quaternion {
     public double x0, x1, x2, x3;

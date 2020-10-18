@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TIPS Controller</string>
+    <string name="app_name">TIPS Remote Controller</string>
     <string name="app_version">v1.0</string>
     <string name="welcome_msg">Welcome to TIPS Controller</string>
     <string name="rotation_vec">Rotation</string>
@@ -25,8 +25,7 @@
         <item >Medium</item>
         <item >Slow</item>
     </string-array>
-    <string name="server_ip">Server ip_address</string>
-    <string name="server_port">port</string>
+    <string name="send_delay">delay</string>
     <string name="rotation_vec_x">0.0</string>
     <string name="rotation_vec_y">0.0</string>
     <string name="rotation_vec_z">0.0</string>

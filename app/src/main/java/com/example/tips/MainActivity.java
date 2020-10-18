@@ -1,37 +1,26 @@
-package com.surflab.tipscontroller;
+package com.example.tips;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.ConnectivityManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,11 +31,6 @@ import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -63,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     public static TextView[] mRotVec = new TextView [4];
     private double[] mRotVecBuffer = new double[3];
 
+    private RemoteTunnel sofaServerTunnel;
+    private int skipSendMax = 0; // a const var which determines how many sends to skip
+    private EditText skipSendEditText;
+
     public class TIPSSensor implements SensorEventListener
     {
         private Sensor mRotationVectorSensor;
@@ -71,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         public Quaternion mCalibrateQuat; //for Calibration purpose
         public boolean mCalibrated;
         public int mFlipDown; // 0 = up, 1 = down
+        private int curSkipSend = 0; // used to limit the amount of data sent through the TCP conn.
 
         public TIPSSensor()
         {
@@ -102,12 +91,17 @@ public class MainActivity extends AppCompatActivity {
             byte bytes [];
             try {
                 bytes = mSensordata.getBytes("UTF-8");
-                if(mPacket == null || mSocket == null)
-                    return;
-                mPacket.setData(bytes);
-                mPacket.setLength(bytes.length);
                 try {
-                    mSocket.send(mPacket);
+                    String response = sofaServerTunnel.sendArr(bytes);
+
+                    // response indicates if we vibrate
+                    if(response.equals("contact")){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            mSysVibrator.vibrate(VibrationEffect.createOneShot(300, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
+                        } else { //deprecated in API 26
+                            mSysVibrator.vibrate(300);
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -122,11 +116,11 @@ public class MainActivity extends AppCompatActivity {
             switch(event.sensor.getType())
             {
                 case Sensor.TYPE_ROTATION_VECTOR:
-                // values[0]: x*sin(&#952/2) </li>
-                // values[1]: y*sin(&#952/2) </li>
-                // values[2]: z*sin(&#952/2) </li>
-                // values[3]: cos(&#952/2) </li>
-                // values[4]: estimated heading Accuracy (in radians) (-1 if unavailable)
+                    // values[0]: x*sin(&#952/2) </li>
+                    // values[1]: y*sin(&#952/2) </li>
+                    // values[2]: z*sin(&#952/2) </li>
+                    // values[3]: cos(&#952/2) </li>
+                    // values[4]: estimated heading Accuracy (in radians) (-1 if unavailable)
                     mSensorQuat = new Quaternion(event.values[3], event.values[0], event.values[1], event.values[2]);
                     if(mCalibrated) {
                         mQuat = mCalibrateQuat.times(mSensorQuat);
@@ -158,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 //                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", event.values[3]));
                     }
 
-                    if(mStreamActive && mTouchView.isOnTouch){
+                    if(mStreamActive && mTouchView.isOnTouch) {
                         //Wrap up the sensor message in format (id, button, motion, orientation)
                         mMotionStateY = (float)mTouchView.motionY;
                         mMotionStateX = (float)mTouchView.motionX * (-1);
@@ -171,7 +165,25 @@ public class MainActivity extends AppCompatActivity {
                             mButtonState = 0;//reset the calibrate button event
                         }
 //                        Log.d(TAG, " : (" +mSensordata + ")");
-                        send();
+
+                        // base case where skip value is 0 (also handles edge case where input is negative)
+                        if (skipSendMax < 1) {
+                            send();
+                        }
+                        // when curSkipSend is reset to 0, actually send the next data update
+                        else if (curSkipSend == 0) {
+                            send();
+                            curSkipSend++;
+                        }
+                        // if we have reached the predetermined limit, reset the counter
+                        else if (curSkipSend >= skipSendMax) {
+                            curSkipSend = 0;
+                        }
+                        // increment the counter while we have not yet hit the limit of send()'s to skip
+                        else {
+                            curSkipSend++;
+                        }
+
                     }
                     break;
 
@@ -187,49 +199,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /// UDP Client Components
-    public static DatagramSocket mSocket = null;
-    public static DatagramPacket mPacket = null;
-    public TIPSListenerThread mListener;
     private double[] mRot_Vec_Buffer 	= new double[3];
-    private EditText mIP_Address;
-    private EditText mPort;
     private Vibrator mSysVibrator;
     SharedPreferences mPrefs;
-
-    class TIPSListenerThread extends Thread{
-        @Override
-        public void run() {
-            super.run();
-            Log.d("TIPS_Controller Listen", " constructed ... ");
-            while(true){
-                Log.d("TIPS_Controller Keep", " : listening..");
-                byte[] buffer = new byte[128];
-                DatagramPacket response = new DatagramPacket(buffer, buffer.length);
-                if(!mListeningActive){
-                    Log.d("TIPS_Controller ", "Listener Disabled ");
-                    return;
-                }
-                try {
-                    mSocket.receive(response);
-                } catch (IOException e) {
-                    Log.d("TIPS_Controller ", "receive IOException");
-                    e.printStackTrace();
-                }
-                String quote = new String(buffer, 0, response.getLength());
-                Log.d("TIPS_Controller got", " :(" +quote + ")");
-                if(quote.equals("contact")){
-                    //int strength = Integer.parseInt(quote.substring(7));
-                    //Log.d("TIPS_Controller ", " Vibrator starts with strength"+strength);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        mSysVibrator.vibrate(VibrationEffect.createOneShot(300, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
-                    } else { //deprecated in API 26
-                        mSysVibrator.vibrate(300);
-                    }
-                }
-
-            }
-        }
-    }
 
     /// Instrument ID & Button state & Motion state
     private int mDeviceID = 2;
@@ -241,101 +213,33 @@ public class MainActivity extends AppCompatActivity {
     Button mActionButton;
     ToggleButton mToggleDevice; // for device id: checked = 1, unchecked = 2;
     private TextView mInstructionText;
-
     private TIPSTouchView mTouchView;
 
-    //check if wifi is connected
-    private boolean isOnWifi() {
-        ConnectivityManager conman = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        return conman.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
-    }
-
-
     /// Streaming status
-
     private static boolean mStreamActive = false;   //true = streaming
-    private static boolean mListeningActive = false;   //true = listening
     private TextView mStreamStatus;
 
     private boolean startStreaming(){
 
-        boolean isOnWifi = isOnWifi();
-        if(!isOnWifi)
-        {
-            ///AlertDialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.warning_wifi).setTitle("Warning");
-            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog mDialog = builder.create();
-            mDialog.show();
-            return false;
-        }
-
-        //check if ip address valid...
-        InetAddress server_address = null;
-        try {
-            server_address = InetAddress.getByName(mIP_Address.getText().toString());
-        } catch (UnknownHostException e) {
-            CharSequence message = "Invalid IP Address";
-            Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-            toast.show();
-            return false;
-        }
-
-        try {
-            mSocket = new DatagramSocket();
-            mSocket.setReuseAddress(true);
-        } catch (SocketException e) {
-            mSocket = null;
-            Toast toast = Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT);
-            toast.show();
-            return false;
-        }
-
-        byte[] buf = new byte[256];
-        int port;
-        try {
-            port = Integer.parseInt(mPort.getText().toString());
-            mPacket = new DatagramPacket(buf, buf.length, server_address, port);
-        } catch (Exception e) {
-            mSocket.close();
-            mSocket = null;
-            Toast toast = Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_SHORT);
-            toast.show();
-            return false;
-        }
-        mListeningActive = true;
-        mListener = new TIPSListenerThread();
-        mListener.start();
-
-        mIP_Address.setEnabled(false);
-        mPort.setEnabled(false);
         mToggleDevice.setEnabled(false);
         //mStreamStatus.setText(getString(R.string.calibrate_status_done));
         mInstructionText.setTextColor(Color.LTGRAY);
         mCalibrateButton.setEnabled(false);
         mVibrationBar.setEnabled(false);
+
+        // checks edittext value and extracts skip number (edittext is set to only accept numbers)
+        String skipStr = skipSendEditText.getText().toString();
+        skipSendMax = Integer.parseInt(skipStr);
+
         return true;
     }
 
     private void stopStreaming() {
         mStreamStatus.setText(getString(R.string.calibrate_status_redo));
-        mListeningActive = false;
-        mIP_Address.setEnabled(true);
-        mPort.setEnabled(true);
         mToggleDevice.setEnabled(true);
         mCalibrateButton.setEnabled(true);
         mVibrationBar.setEnabled(true);
         mInstructionText.setTextColor(Color.DKGRAY);
-        if (mSocket != null)
-            mSocket.close();
-        mSocket = null;
-        mPacket = null;
     }
 
     /// to check and request permission.
@@ -343,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int VIBRATE_PERMISSION_CODE = 101;
     private static final int ACCESS_NETWORK_STATE_PERMISSION_CODE = 102;
     private static final int ACCESS_WIFI_STATE_PERMISSION_CODE = 103;
+
     public void checkPermission(String permission, int requestCode)
     {
         if (ContextCompat.checkSelfPermission(MainActivity.this, permission)
@@ -375,10 +280,22 @@ public class MainActivity extends AppCompatActivity {
         //Keep the screen always on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-    //TODO (should change the thread structure later to move the thread to an non-GUI activity)
+        //TODO (should change the thread structure later to move the thread to an non-GUI activity)
         //remove the restriction so that we can run network operations on the main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        skipSendEditText = (EditText)findViewById(R.id.skip_send_delay);
+        skipSendEditText.bringToFront();
+
+        // gets secrets to perform remote tunneling process
+        String username = getResources().getString(R.string.remoteTunnelUsername);
+        String password = getResources().getString(R.string.remoteTunnelPassword);
+        String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
+        String serverID = getResources().getString(R.string.remoteTunnelServerID);
+
+        // tunnels into remote server network
+        sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
 
         // Get an instance of the SensorManager
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -388,11 +305,6 @@ public class MainActivity extends AppCompatActivity {
         mRotVec[3]  = (TextView) findViewById(R.id.textW);
 
         mTIPSSensor = new TIPSSensor();
-
-        mIP_Address = (EditText) findViewById(R.id.editTextTextIPAddress);
-        mPort	    = (EditText) findViewById(R.id.editTextTextPortNum);
-        mIP_Address.bringToFront();
-        mPort.bringToFront();
 
         mStreamStatus = findViewById(R.id.textViewStreamState);
         mStreamStatus.setText(R.string.calibrate_status_init);
@@ -433,12 +345,6 @@ public class MainActivity extends AppCompatActivity {
                         mStreamActive = true;
                         mStartButton.setText(R.string.button_stop);
                     }
-                    /// store the ipAddr and port# to sharedPref
-                    mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putString("ip", mIP_Address.getText().toString());
-                    editor.putString("port", mPort.getText().toString());
-                    editor.apply();
                 }
                 else{
                     mStreamActive = false;
@@ -480,13 +386,8 @@ public class MainActivity extends AppCompatActivity {
 
         /// retrieve the saved INFO from mPrefs
         mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
-        String ip = mPrefs.getString("ip","");
-        String port = mPrefs.getString("port","");
         mVibrationStrength = mPrefs.getInt("vibration_str", 20);
         mVibrationBar.setProgress(mVibrationStrength);
-        if(! ip.isEmpty()) mIP_Address.setText(ip);
-        if(! port.isEmpty())  mPort.setText(port);
-
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
