@@ -160,20 +160,20 @@ public class MainActivity extends AppCompatActivity {
                         //mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %d, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", mDeviceID, mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mSensordata = mStrBuilder.toString();
-                        if(mButtonState == 3) {
-                            Log.d(TAG, " : (" +mSensordata + ")");
-                            mButtonState = 0;//reset the calibrate button event
-                        }
 //                        Log.d(TAG, " : (" +mSensordata + ")");
 
                         // base case where skip value is 0 (also handles edge case where input is negative)
                         if (skipSendMax < 1) {
                             send();
+                            if(mButtonState == 3)
+                                mButtonState = 0;//reset the calibrate button event
                         }
                         // when curSkipSend is reset to 0, actually send the next data update
                         else if (curSkipSend == 0) {
                             send();
                             curSkipSend++;
+                            if(mButtonState == 3)
+                                mButtonState = 0;//reset the calibrate button event
                         }
                         // if we have reached the predetermined limit, reset the counter
                         else if (curSkipSend >= skipSendMax) {
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean startStreaming(){
 
-        mToggleDevice.setEnabled(false);
+        //mToggleDevice.setEnabled(false);
         //mStreamStatus.setText(getString(R.string.calibrate_status_done));
         mInstructionText.setTextColor(Color.LTGRAY);
         mCalibrateButton.setEnabled(false);
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopStreaming() {
         mStreamStatus.setText(getString(R.string.calibrate_status_redo));
-        mToggleDevice.setEnabled(true);
+        //mToggleDevice.setEnabled(true);
         mCalibrateButton.setEnabled(true);
         mVibrationBar.setEnabled(true);
         mInstructionText.setTextColor(Color.DKGRAY);
