@@ -1,10 +1,12 @@
 # Set-up instruction for SOFA and TIPS Android controller
 
-* Make sure your phone and PC are connected to the same network(WIFI) before the following steps.
+* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1jeCPuuc761pwe0Nb8wc0wNlOAy03TAo5/view?usp=sharing) (right click and 'run as admin' to install)
 
-* Install SOFA from [SOFA_installer_Aug2020](https://drive.google.com/file/d/1sSXHbxEtGmmSUO2YTxfYJXka2jMdLn9b/view?usp=sharing)
-
-    * Issue 1: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
+    * Troubleshooting 1: Can not run the installer due to security reastons.
+        
+        * try turning off or lowering the security level of your anti-mareware softwares like McAfee or Windows Defender  
+    
+    * Troubleshooting 2: After installation, if you don't see a file named "myIpAddress.txt" in your SOFA directory. Try:
 
         * disable the windows firewall and reinstall SOFA
 
@@ -14,7 +16,7 @@
 
         * If you get more than one ip address, ignore the ones start with "192.xxx..."
 
-    * Issue 2: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
+    * Troubleshooting 3: Scene file crashes upon simulation starts /the scene is not rendered properly, e.g “fatty tissue in the scene is not rendered”. 
 
         * Solution 1: Upon clicking runSOFA, if the OpenGL version displayed in the log is not "QtViewer: OpenGL 4.5.0 NVIDIA" or higher,you need to 
         set your Nvidia graphic card for SOFA. In the Nvidia Control panel program settings, make sure sofa is using the high-perfomance Nvidia graphic card. 
@@ -35,12 +37,16 @@
     
     * [APP download](https://bitbucket.org/surflab/tips-android-controller/downloads/app-release.apk)
 
+* Make sure your phone and PC are connected to the same network(WIFI) before running the simulation.
+
 * Prepare the scenes:
     * Download the scene file below, open it using any text editor and search for the keyoword "inServerIPAddr", then 
     replace the ip address after this keyword by your ip address as in the above step. There are two in the scene file to be replaced.
     
-    * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/LapChole-Android.scn
-    * Lap Appendectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/LapAppendec_-_Android.scn
+    * Lap Appendectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Appendect_Sep15.scn
+    * Lap Chole: https://bitbucket.org/surflab/tips-android-controller/downloads/LapChole_android.scn
+    * Lap Adrenalectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Adrenalectomy-android.scn
+    * Lap Hepatectomy: https://bitbucket.org/surflab/tips-android-controller/downloads/Hepatectomy-android.scn
 
 **Issues / Some useful notes for programmers**
 ------------------------------------------------
