@@ -1,41 +1,50 @@
 <resources>
-    <string name="app_name">TIPS Controller</string>
-    <string name="app_version">v1.0</string>
-    <string name="welcome_msg">Welcome to TIPS Controller</string>
-    <string name="rotation_vec">Rotation</string>
-    <string name="surflab_logo">SurfLab Logo</string>
-    <string name="instruction1">Setup Guide:\n \n 1. Make sure you PC and cellphone are connected to the same network(WiFi). \n \n
-        2. Enter your PC server ip address and port number ( Refer to SOFA/myIpAddress.txt on your PC ).\n \n
-        3. Start the simulation (SPACEBAR) in SOFA on your PC \n \n
-        4. Point your phone to your PC screen and click CALIBRATE button \n \n
-        5. Select Instrument 1 (or 2), then Flip over your phone (facing down) and touch the stylus to start.
+<string name="app_name">TIPS Controller</string>
+<string name="app_version">v1.0</string>
+<string name="welcome_msg">Welcome to TIPS Controller</string>
+<string name="rotation_vec">Rotation</string>
+<string name="surflab_logo">SurfLab Logo</string>
+<string name="instruction1">Setup Guide:\n \n 1. Connect to the remote server via Teamviewer(id:595354208) \n \n
+        2. Double-click Remote_LapChole_android.scn on the remote desktop and open it with SOFA\n \n
+        3. Start the simulation (press SPACEBAR) \n \n
+        4. Open the TIPS Controller App on your phone (it takes a while to load) \n \n
+        5. Click CALIBRATE button, then Flip over your phone and touch the stylus to start. \n \n
+        6. Use VOLUME DOWN button on your phone for the tool action in SOFA\n \n
+        7. When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
         </string>
-    <string name="instruction2">HowtoCalibrate</string>
-    <string name="instruction3">HowToUseTheController</string>
-    <string name="button_calibrate">CALIBRATE</string>
-    <string name="button_recalibrate">RECALIBRATE</string>
-    <string name="button_start">START</string>
-    <string name="button_stop">STOP</string>
-    <string name="instrument_1">INSTRUMENT 1</string>
-    <string name="instrument_2">INSTRUMENT 2</string>
-    <string name="vibration_str">Vibration Strength: </string>
-    <string-array name="spinner_array">
-        <item >Fastest</item>
-        <item >Fast</item>
-        <item >Medium</item>
-        <item >Slow</item>
-    </string-array>
-    <string name="server_ip">Server ip_address</string>
-    <string name="server_port">port</string>
-    <string name="rotation_vec_x">0.0</string>
-    <string name="rotation_vec_y">0.0</string>
-    <string name="rotation_vec_z">0.0</string>
-    <string name="rotation_vec_w">0.0</string>
-    <string name="warning_wifi">Not connected to a WIFI network.</string>
-    <string name="calibrate_status_init">Click to\nCalibrate</string>
-    <string name="calibrate_status_redo">Click to\nRe-calibrate</string>
-    <string name="calibrate_status_done">Calibrated \nFlip to start…</string>
-    <string name="cancel">Cancel</string>
-    <string name="error_unknown">Unknown UDP network problem</string>
-    <string name="button_action">ACTION</string>
+<string name="instruction1_old">Setup Guide:\n \n 1. Connect to the remote server via Teamviewer(id:595354208)\n \n
+    2. Enter your PC server ip address and port number ( Refer to SOFA/myIpAddress.txt on your PC ).\n \n
+    3. Start the simulation (SPACEBAR) in SOFA on your PC \n \n
+    4. Point your phone to your PC screen and click CALIBRATE button \n \n
+    5. Select Instrument 1 (or 2), then Flip over your phone (facing down) and touch the stylus to start. \n \n
+    6. When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
+    </string>
+<string name="instruction2">HowtoCalibrate</string>
+<string name="instruction3">HowToUseTheController</string>
+<string name="button_calibrate">CALIBRATE</string>
+<string name="button_recalibrate">RECALIBRATE</string>
+<string name="button_start">START</string>
+<string name="button_stop">STOP</string>
+<string name="instrument_1">INSTRUMENT 1</string>
+<string name="instrument_2">INSTRUMENT 2</string>
+<string name="vibration_str">Vibration Strength: </string>
+<string-array name="spinner_array">
+    <item >Fastest</item>
+    <item >Fast</item>
+    <item >Medium</item>
+    <item >Slow</item>
+</string-array>
+
+<string name="send_delay">send_delay</string>
+<string name="rotation_vec_x">0.0</string>
+<string name="rotation_vec_y">0.0</string>
+<string name="rotation_vec_z">0.0</string>
+<string name="rotation_vec_w">0.0</string>
+<string name="warning_wifi">Not connected to a WIFI network.</string>
+<string name="calibrate_status_init">Click to\nCalibrate</string>
+<string name="calibrate_status_redo">Click to\nRe-calibrate</string>
+<string name="calibrate_status_done">Calibrated \nFlip to start…</string>
+<string name="cancel">Cancel</string>
+<string name="error_unknown">Unknown UDP network problem</string>
+<string name="button_action">ACTION</string>
 </resources>
