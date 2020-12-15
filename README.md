@@ -1,19 +1,19 @@
 # TIPS Remote - Client side instruction
 
 
-* On you Cell Phone:  
+* On your Cell Phone:  
     
     * Install TIPS controller APP : [APP download](https://bitbucket.org/surflab/tips-android-controller/downloads/TIPS-remote-release.apk)
     
 
 
-* On you PC / Laptop :
+* On your PC / Laptop :
 
-    * Open Chrome Web browser and go to play.rainway.com. 
+    * Open a Chrome web browser and go to play.rainway.com. 
         
-        * Log into rainway using: (id: tips.surflab@gmail.com; password: surflabtips)
+        * Log into rainway using: (id: tips.surflab@gmail.com; password: )
         
-        * Under 'My Games', click 'SOFA LapChole' to open SOFA simulator. Use spacebar to start the SOFA animation.
+        * Under 'My Games', click 'SOFA LapChole' to open the SOFA simulator. Use spacebar to start the SOFA animation.
         
-        * Then click the 'JOIN' button from your cellphone TIPS controller APP. Follow its instruction.
+        * Then click the 'JOIN' button on your cellphone TIPS controller APP. Follow its instructions.
 
