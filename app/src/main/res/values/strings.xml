@@ -1,16 +1,19 @@
 <resources>
 <string name="app_name">TIPS Controller</string>
-<string name="app_version">v1.0</string>
+<string name="app_version">v2.0</string>
 <string name="welcome_msg">Welcome to TIPS Controller</string>
 <string name="rotation_vec">Rotation</string>
 <string name="surflab_logo">SurfLab Logo</string>
-<string name="instruction1">Setup Guide:\n \n 1. Connect to the remote server via Teamviewer(id:595354208) \n \n
-        2. Double-click Remote_LapChole_android.scn on the remote desktop and open it with SOFA\n \n
-        3. Start the simulation (press SPACEBAR) \n \n
-        4. Open the TIPS Controller App on your phone (it takes a while to load) \n \n
-        5. Click CALIBRATE button, then Flip over your phone and touch the stylus to start. \n \n
-        6. Use VOLUME DOWN button on your phone for the tool action in SOFA\n \n
-        7. When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
+    <string name="instruction1">User Guide:\n \n
+            Click CALIBRATE button, then Flip over your phone and touch the stylus to start. \n \n
+            Use VOLUME DOWN button on your phone for the tool action in SOFA\n \n
+            When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
+        </string>
+<string name="instruction1_1">User Guide:\n \n
+        1. Do not Open this app until you have started the simulation in SOFA (otherwise you need to force stop this app)\n \n
+        2. Click CALIBRATE button, then Flip over your phone and touch the stylus to start. \n \n
+        3. Use VOLUME DOWN button on your phone for the tool action in SOFA\n \n
+        4. When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
         </string>
 <string name="instruction1_old">Setup Guide:\n \n 1. Connect to the remote server via Teamviewer(id:595354208)\n \n
     2. Enter your PC server ip address and port number ( Refer to SOFA/myIpAddress.txt on your PC ).\n \n
@@ -21,6 +24,10 @@
     </string>
 <string name="instruction2">HowtoCalibrate</string>
 <string name="instruction3">HowToUseTheController</string>
+<string name="button_join">JOIN SurfLab PC</string>
+<string name="button_join_backup">JOIN Backup PC</string>
+<string name="button_joining">JOINING</string>
+<string name="button_connected">CONNECTED</string>
 <string name="button_calibrate">CALIBRATE</string>
 <string name="button_recalibrate">RECALIBRATE</string>
 <string name="button_start">START</string>

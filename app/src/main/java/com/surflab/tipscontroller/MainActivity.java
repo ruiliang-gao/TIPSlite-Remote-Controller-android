@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -210,11 +211,12 @@ public class MainActivity extends AppCompatActivity {
     private float mMotionStateX = 0;
     Button  mStartButton;
     Button mCalibrateButton;
-    Button mActionButton;
+    Button mJoinButton;
+    Button mJoinBackupButton;
     ToggleButton mToggleDevice; // for device id: checked = 1, unchecked = 2;
     private TextView mInstructionText;
     private TIPSTouchView mTouchView;
-
+    private ImageView mInstructionImage;
     /// Streaming status
     private static boolean mStreamActive = false;   //true = streaming
     private TextView mStreamStatus;
@@ -288,15 +290,6 @@ public class MainActivity extends AppCompatActivity {
         skipSendEditText = (EditText)findViewById(R.id.skip_send_delay);
         skipSendEditText.bringToFront();
 
-        // gets secrets to perform remote tunneling process
-        String username = getResources().getString(R.string.remoteTunnelUsername);
-        String password = getResources().getString(R.string.remoteTunnelPassword);
-        String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
-        String serverID = getResources().getString(R.string.remoteTunnelServerID);
-
-        // tunnels into remote server network
-        sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
-
         // Get an instance of the SensorManager
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mRotVec[0]  = (TextView) findViewById(R.id.textX);
@@ -311,6 +304,8 @@ public class MainActivity extends AppCompatActivity {
         mInstructionText = findViewById(R.id.textInstruction);
         mInstructionText.setTextColor(Color.DKGRAY);
         mStartButton = findViewById(R.id.start_button);
+        mJoinButton = findViewById(R.id.join_button);
+        mJoinBackupButton = findViewById(R.id.join_backup_button);
         mVibrationBar = findViewById(R.id.seekBarVibration);
         mVibrationBar.bringToFront();
         mVibrationBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -334,7 +329,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mStartButton.setVisibility(View.GONE);/// set invisible since we are using gesture based
-
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -354,6 +348,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Join Surflab PC Server
+        mJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mJoinButton.setText(R.string.button_joining);
+                mJoinButton.setEnabled(false);
+                //SETUP CONNECTION
+                // gets secrets to perform remote tunneling process
+                String username = getResources().getString(R.string.remoteTunnelUsername);
+                String password = getResources().getString(R.string.remoteTunnelPassword);
+                String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
+                String serverID = getResources().getString(R.string.remoteTunnelServerID);
+                // tunnels into remote server network
+                sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
+                mJoinButton.setText(R.string.button_connected);
+                mJoinBackupButton.setEnabled(false);
+            }
+        });
+
+        //Join Surflab Backup PC Server
+        mJoinBackupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mJoinBackupButton.setText(R.string.button_joining);
+                mJoinBackupButton.setEnabled(false);
+                //SETUP CONNECTION
+                // gets secrets to perform remote tunneling process
+                String username = getResources().getString(R.string.remoteTunnelUsername);
+                String password = getResources().getString(R.string.remoteTunnelPassword);
+                String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
+                String serverID = getResources().getString(R.string.remoteBackupServerID);
+                // tunnels into remote server network
+                sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
+                mJoinBackupButton.setText(R.string.button_connected);
+                mJoinButton.setEnabled(false);
+            }
+        });
+
+
+        mInstructionImage = findViewById(R.id.instructionImage);
         mCalibrateButton = findViewById(R.id.calibrate_button);
         mCalibrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -363,23 +397,11 @@ public class MainActivity extends AppCompatActivity {
                 mButtonState = 3;
                 mCalibrateButton.setText(R.string.button_recalibrate);
                 mStreamStatus.setText(R.string.calibrate_status_done);
+                mInstructionImage.setVisibility(View.GONE);
                 Log.d(TAG, "calibrated...");
+
             }
         });
-
-        //Toggle between device 1 and device 2
-//        mToggleDevice = (ToggleButton) findViewById(R.id.toggleButton);
-//        mToggleDevice.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(mToggleDevice.isChecked()){
-//                    mDeviceID = 1;
-//                }
-//                else
-//                    mDeviceID = 2;
-//            }
-//        });
-
 
         mTouchView = (TIPSTouchView) findViewById(R.id.touch_view);
         mSysVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
