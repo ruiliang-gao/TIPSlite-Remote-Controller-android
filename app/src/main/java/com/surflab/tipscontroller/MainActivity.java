@@ -307,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
         mJoinButton = findViewById(R.id.join_button);
         mJoinBackupButton = findViewById(R.id.join_backup_button);
         mVibrationBar = findViewById(R.id.seekBarVibration);
+        mJoinButton.bringToFront();
         mVibrationBar.bringToFront();
         mVibrationBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -388,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mInstructionImage = findViewById(R.id.instructionImage);
+        mInstructionImage.setVisibility(View.GONE);
         mCalibrateButton = findViewById(R.id.calibrate_button);
         mCalibrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -402,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        mCalibrateButton.bringToFront();
         mTouchView = (TIPSTouchView) findViewById(R.id.touch_view);
         mSysVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
