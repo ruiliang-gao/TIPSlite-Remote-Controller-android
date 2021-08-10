@@ -5,8 +5,8 @@
 <string name="rotation_vec">Rotation</string>
 <string name="surflab_logo">SurfLab Logo</string>
     <string name="instruction1">User Guide:\n \n
-            Click CALIBRATE button, then Flip over your phone and touch the stylus to start. \n \n
-            Use VOLUME DOWN button on your phone for the tool action in SOFA\n \n
+            Once CALIBRATED, Flip over and touch the stylus to start. \n \n
+            Use VOLUME DOWN button for the tool action in simulator\n \n
             When the tool gets stuck inside tissue, flip up the phone and recalibrate to reset.
         </string>
 <string name="instruction1_1">User Guide:\n \n
@@ -24,7 +24,7 @@
     </string>
 <string name="instruction2">HowtoCalibrate</string>
 <string name="instruction3">HowToUseTheController</string>
-<string name="button_join">JOIN SurfLab PC</string>
+<string name="button_join"> JOIN </string>
 <string name="button_join_backup">JOIN Backup PC</string>
 <string name="button_joining">JOINING</string>
 <string name="button_connected">CONNECTED</string>

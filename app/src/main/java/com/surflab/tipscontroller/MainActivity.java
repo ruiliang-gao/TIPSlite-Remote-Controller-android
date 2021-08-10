@@ -15,6 +15,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -217,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mInstructionText;
     private TIPSTouchView mTouchView;
     private ImageView mInstructionImage;
+    private ImageButton mQuestionButton;
     /// Streaming status
     private static boolean mStreamActive = false;   //true = streaming
     private TextView mStreamStatus;
@@ -329,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mStartButton.setVisibility(View.GONE);/// set invisible since we are using gesture based
+        mStartButton.setVisibility(View.GONE);/// removed it since we are using gesture based
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -369,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Join Surflab Backup PC Server
+        mJoinBackupButton.setVisibility(View.GONE);/// removed it since the button is confusing
         mJoinBackupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -387,9 +391,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //TIPSlite instruction image
         mInstructionImage = findViewById(R.id.instructionImage);
-        mInstructionImage.setVisibility(View.GONE);
+//        mInstructionImage.setVisibility(View.GONE);
         mCalibrateButton = findViewById(R.id.calibrate_button);
         mCalibrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -399,9 +403,29 @@ public class MainActivity extends AppCompatActivity {
                 mButtonState = 3;
                 mCalibrateButton.setText(R.string.button_recalibrate);
                 mStreamStatus.setText(R.string.calibrate_status_done);
-                mInstructionImage.setVisibility(View.GONE);
+                mInstructionImage.setVisibility(View.INVISIBLE);
+                mCalibrateButton.setEnabled(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCalibrateButton.setEnabled(true);
+                    }
+                },2000);
                 Log.d(TAG, "calibrated...");
 
+            }
+        });
+
+        //TIPSlite instruction button
+        mQuestionButton = findViewById(R.id.questionButton);
+        mQuestionButton.bringToFront();
+        mQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mInstructionImage.getVisibility() == View.VISIBLE)
+                    mInstructionImage.setVisibility(View.INVISIBLE);
+                else if(mInstructionImage.getVisibility() == View.INVISIBLE)
+                    mInstructionImage.setVisibility(View.VISIBLE);
             }
         });
         mCalibrateButton.bringToFront();

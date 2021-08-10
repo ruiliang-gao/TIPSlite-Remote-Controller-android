@@ -65,7 +65,6 @@
         android:fontFamily="sans-serif-black"
         android:text="@string/instruction1"
         android:textSize="15sp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/touch_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -168,7 +167,7 @@
         android:layout_width="100dp"
         android:layout_height="41dp"
         android:layout_margin="2dp"
-        android:gravity="center_vertical|end"
+        android:gravity="center"
         android:maxLines="2"
         android:text="@string/calibrate_status_init"
         android:textColor="@android:color/holo_green_dark"
@@ -236,8 +235,9 @@
         android:layout_width="150dp"
         android:layout_height="20dp"
         android:layout_marginStart="6dp"
-        android:max="100"
-        android:progress="95"
+        android:layout_marginLeft="6dp"
+        android:max="120"
+        android:progress="60"
         app:layout_constraintBottom_toBottomOf="@+id/textVibration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.016"
@@ -245,7 +245,19 @@
         app:layout_constraintTop_toBottomOf="@+id/calibrate_button"
         app:layout_constraintVertical_bias="1.0" />
 
-    <!--    <ImageView-->
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/instructionImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/instruct_animation"
+        android:translationZ="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/touch_view"
+        app:layout_constraintTop_toBottomOf="@+id/join_button"
+        app:layout_constraintVertical_bias="0.836"
+        app:srcCompat="@drawable/instruction" />
+<!--    <ImageView-->
 <!--        android:id="@+id/instructionImage"-->
 <!--        android:layout_width="413dp"-->
 <!--        android:layout_height="542dp"-->
@@ -256,39 +268,6 @@
 <!--        app:layout_constraintTop_toBottomOf="@+id/join_button"-->
 <!--        app:layout_constraintVertical_bias="0.836"-->
 <!--        app:srcCompat="@drawable/instruction" />-->
-
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/instructionImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/instruct_animation"
-        android:translationZ="10dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/touch_view"
-        app:layout_constraintTop_toTopOf="@+id/join_backup_button"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/instruction" />
-
-    <TextView
-        android:id="@+id/textQuestionButton"
-        android:layout_width="100dp"
-        android:layout_height="41dp"
-        android:layout_margin="1dp"
-        android:gravity="center_vertical|end"
-        android:maxLines="2"
-        android:text="click for instruction"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/questionButton"
-        app:layout_constraintEnd_toStartOf="@+id/questionButton"
-        app:layout_constraintHorizontal_bias="0.98"
-        app:layout_constraintStart_toStartOf="@+id/skip_send_delay"
-        app:layout_constraintTop_toTopOf="@+id/questionButton"
-        app:layout_constraintVertical_bias="0.777" />
 
     <Button
         android:id="@+id/join_backup_button"
