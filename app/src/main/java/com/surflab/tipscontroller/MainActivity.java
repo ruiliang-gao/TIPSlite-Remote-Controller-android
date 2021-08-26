@@ -560,15 +560,20 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(_BTReceiver, filter);
         //Add the bluetooth drop down list
         List<String> BTNames = new ArrayList<String>();
-        BTNames.add("Choose Your Device Here");
         BTlist = findViewById(R.id.spinner_bt);
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mAdapter.isEnabled())
+        if(mAdapter == null)
         {
+            BTNames.add("Your Device does not support bluetooth");
+        }
+        else if (!mAdapter.isEnabled())
+        {
+            BTNames.add("Switch on bluetooth and reopen this app");
             //Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         else {
+            BTNames.add("Choose Your Device Here");
             Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
 
             // There are paired devices. Get the name and address of each paired device.
@@ -583,14 +588,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG_BT, "Device Class ID: " + device.getBluetoothClass().getMajorDeviceClass());
                 }
             }
-
-            ArrayAdapter<String> btDataAdapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_spinner_item,
-                    BTNames);
-
-            // attaching data adapter to spinner
-            BTlist.setAdapter(btDataAdapter);
         }
+        ArrayAdapter<String> btDataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item,
+                BTNames);
+        // attaching data adapter to spinner
+        BTlist.setAdapter(btDataAdapter);
         //Bluetooth Connect
         mJoinButton.setOnClickListener(new View.OnClickListener() {
             @Override
