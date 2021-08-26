@@ -1,11 +1,14 @@
 package com.surflab.tipscontroller;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -23,20 +26,120 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+    ///newly added Bluetooth components
+    private BluetoothAdapter mAdapter = null;
+    private BluetoothSocket socketConnection = null;
+    private TIPSBluetoothClient mConnectedThread = null;
+    //MATCHED IN SPP ENGINE
+    private static final UUID BT_MODULE_UUID = UUID.fromString("263beec5-a7fe-443a-a9ee-9bdfc5fc17a3");
+    private static final String TAG_BT = "Bluetooth";
+
+    //The BroadcastReceiver that listens for bluetooth broadcasts
+    private final BroadcastReceiver _BTReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, @NotNull Intent intent)
+        {
+            String action = intent.getAction();
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            String deviceName = device.getName();
+
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                Log.d(TAG_BT, "ACTION_FOUND BT: " + deviceName);
+            }
+            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                Log.d(TAG_BT, "ACTION_ACL_CONNECTED BT: " + deviceName);
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Log.d(TAG_BT, "ACTION_DISCOVERY_FINISHED BT: " + deviceName);
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {
+                Log.d(TAG_BT, "ACTION_ACL_DISCONNECT_REQUESTED BT: " + deviceName);
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                Log.d(TAG_BT, "ACTION_ACL_DISCONNECTED BT: " + deviceName);
+            }
+        }
+    };
+
+    private void ConnectToDeviceByAddress(String InAddress)
+    {
+        Log.d(TAG_BT, " - ConnectToDeviceByAddress: " + InAddress);
+
+        BluetoothDevice device = mAdapter.getRemoteDevice(InAddress);
+
+        Log.d(TAG_BT, " - address: " + InAddress);
+        Log.d(TAG_BT, " - GUID: " + BT_MODULE_UUID);
+
+        if(mConnectedThread != null)
+        {
+            mConnectedThread.stop();
+            mConnectedThread = null;
+        }
+        if(socketConnection != null)
+        {
+            try
+            {
+                socketConnection.close();
+                socketConnection = null;
+            } catch (IOException e) {
+            }
+        }
+
+        try {
+            socketConnection = createBluetoothSocket(device);
+            Log.d(TAG_BT, " - created socket: " + socketConnection);
+        } catch (IOException e) {
+            Log.d(TAG_BT, " - SOCKET FAILED");
+            return;
+        }
+        try {
+            Log.d(TAG_BT, " - called connect: " + socketConnection);
+            socketConnection.connect();
+        } catch (IOException e) {
+            Log.d(TAG_BT, " - CONNECT FAILED");
+            try {
+                socketConnection.close();
+            } catch (IOException e2) {
+                //insert code to deal with this
+            }
+            return;
+        }
+        mConnectedThread = new TIPSBluetoothClient(socketConnection, null);
+        mConnectedThread.start();
+        Log.d(TAG_BT, " - CONNECTING");
+    }
+
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+        return device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+    }
 
     /// TIPS Sensor components
     private SensorManager mSensorManager;
@@ -45,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar mVibrationBar;
     private int mVibrationStrength = 20;
     StringBuilder mStrBuilder = new StringBuilder(256);
-    String TAG = "TIPSSensor_tag";
+    String TAG_TIPS = "TIPS ";
 
     public static TextView[] mRotVec = new TextView [4];
     private double[] mRotVecBuffer = new double[3];
@@ -90,25 +193,35 @@ public class MainActivity extends AppCompatActivity {
             mSensorManager.unregisterListener(this);
         }
 
+        public void sendJsonBluetooth(){
+            if(mConnectedThread != null){
+                JSONObject jsonObj = new JSONObject();
+                try {
+                    jsonObj.put("data", mSensordata);
+                    //String response = ...
+                } catch ( JSONException e) {
+                    e.printStackTrace();
+                }
+                mConnectedThread.write(jsonObj.toString());
+            }
+
+        }
+
         public void send(){
             byte bytes [];
             try {
                 bytes = mSensordata.getBytes("UTF-8");
-                try {
-                    String response = sofaServerTunnel.sendArr(bytes);
+                String response = sofaServerTunnel.sendArr(bytes);
 
-                    // response indicates if we vibrate
-                    if(response.equals("contact")){
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            mSysVibrator.vibrate(VibrationEffect.createOneShot(300, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
-                        } else { //deprecated in API 26
-                            mSysVibrator.vibrate(300);
-                        }
+                // response indicates if we vibrate
+                if(response.equals("contact")){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mSysVibrator.vibrate(VibrationEffect.createOneShot(300, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
+                    } else { //deprecated in API 26
+                        mSysVibrator.vibrate(300);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -119,15 +232,16 @@ public class MainActivity extends AppCompatActivity {
             switch(event.sensor.getType())
             {
                 case Sensor.TYPE_ROTATION_VECTOR:
-                    // values[0]: x*sin(&#952/2) </li>
-                    // values[1]: y*sin(&#952/2) </li>
-                    // values[2]: z*sin(&#952/2) </li>
-                    // values[3]: cos(&#952/2) </li>
+                    // data format as quat XYZW
+                    // values[0]: x*sin(&#952/2)
+                    // values[1]: y*sin(&#952/2)
+                    // values[2]: z*sin(&#952/2)
+                    // values[3]: cos(&#952/2)
                     // values[4]: estimated heading Accuracy (in radians) (-1 if unavailable)
                     mSensorQuat = new Quaternion(event.values[3], event.values[0], event.values[1], event.values[2]);
                     if(mCalibrated) {
                         mQuat = mCalibrateQuat.times(mSensorQuat);
-                        /// Gesture detection
+                        /// Gesture detection： flipping down
                         if(mFlipDown == 0 && Math.abs(mQuat.x2) > 0.92){
                             mFlipDown = 1;
                             //Log.d("TIPS_Motion sensor", "Device flipped down");
@@ -145,14 +259,11 @@ public class MainActivity extends AppCompatActivity {
                         mQuat = mSensorQuat;
                     if(mRotVec[0] != null)
                     {
-                        mRotVec[0].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x1));
-                        mRotVec[1].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x2));
-                        mRotVec[2].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x3));
-                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x0));
-//                        mRotVec[0].setText(String.format(Locale.ENGLISH,"%.3f", event.values[0]));
-//                        mRotVec[1].setText(String.format(Locale.ENGLISH,"%.3f", event.values[1]));
-//                        mRotVec[2].setText(String.format(Locale.ENGLISH,"%.3f", event.values[2]));
-//                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", event.values[3]));
+                        // commented out as no need to display them at all.
+//                        mRotVec[0].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x1));
+//                        mRotVec[1].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x2));
+//                        mRotVec[2].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x3));
+//                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x0));
                     }
 
                     if(mStreamActive && mTouchView.isOnTouch) {
@@ -163,17 +274,18 @@ public class MainActivity extends AppCompatActivity {
                         //mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %.1f, %.1f, %.3f, %.3f, %.3f, %.3f", mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mStrBuilder.append(String.format(Locale.ENGLISH, "%d, %d, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", mDeviceID, mButtonState, mMotionStateY, mMotionStateX, mQuat.x1, mQuat.x2, mQuat.x3, mQuat.x0));
                         mSensordata = mStrBuilder.toString();
-//                        Log.d(TAG, " : (" +mSensordata + ")");
+//                        Log.d(TAG_TIPS, " : (" +mSensordata + ")");
 
                         // base case where skip value is 0 (also handles edge case where input is negative)
                         if (skipSendMax < 1) {
-                            send();
+                            //send();
+                            sendJsonBluetooth();
                             if(mButtonState == 3)
                                 mButtonState = 0;//reset the calibrate button event
                         }
                         // when curSkipSend is reset to 0, actually send the next data update
                         else if (curSkipSend == 0) {
-                            send();
+                            sendJsonBluetooth();//send();
                             curSkipSend++;
                             if(mButtonState == 3)
                                 mButtonState = 0;//reset the calibrate button event
@@ -211,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
     public int mButtonState = 0;
     private float mMotionStateY = 0;
     private float mMotionStateX = 0;
+    private Spinner BTlist;
     Button  mStartButton;
     Button mCalibrateButton;
     Button mJoinButton;
@@ -279,9 +392,9 @@ public class MainActivity extends AppCompatActivity {
 //        android.permission.ACCESS_NETWORK_STATE
 //        android.permission.ACCESS_WIFI_STATE
         checkPermission(Manifest.permission.VIBRATE, VIBRATE_PERMISSION_CODE);
-        checkPermission(Manifest.permission.VIBRATE, VIBRATE_PERMISSION_CODE);
         checkPermission(Manifest.permission.ACCESS_NETWORK_STATE, ACCESS_NETWORK_STATE_PERMISSION_CODE);
         checkPermission(Manifest.permission.ACCESS_WIFI_STATE, ACCESS_WIFI_STATE_PERMISSION_CODE);
+        //checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION, BLUETOOTH_PERMISSION_CODE);
         //Keep the screen always on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -294,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
         skipSendEditText.bringToFront();
 
         // Get an instance of the SensorManager
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mRotVec[0]  = (TextView) findViewById(R.id.textX);
         mRotVec[1]  = (TextView) findViewById(R.id.textY);
         mRotVec[2]  = (TextView) findViewById(R.id.textZ);
@@ -320,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putInt("vibration_str", progress);
                 editor.apply();
-                Log.d(TAG, "onProgressChanged: "+mVibrationStrength);
+                Log.d(TAG_TIPS, "onProgressChanged: "+mVibrationStrength);
             }
 
             @Override
@@ -352,26 +465,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Join Surflab PC Server
-        mJoinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mJoinButton.setText(R.string.button_joining);
-                mJoinButton.setEnabled(false);
-                //SETUP CONNECTION
-                // gets secrets to perform remote tunneling process
-                String username = getResources().getString(R.string.remoteTunnelUsername);
-                String password = getResources().getString(R.string.remoteTunnelPassword);
-                String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
-                String serverID = getResources().getString(R.string.remoteTunnelServerID);
-                // tunnels into remote server network
-                sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
-                mJoinButton.setText(R.string.button_connected);
-                mJoinBackupButton.setEnabled(false);
-            }
-        });
+        //Join Surflab PC Server -> replaced by bluetooth connect function for now
+//        mJoinButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mJoinButton.setText(R.string.button_joining);
+//                mJoinButton.setEnabled(false);
+//                //SETUP CONNECTION
+//                // gets secrets to perform remote tunneling process
+//                String username = getResources().getString(R.string.remoteTunnelUsername);
+//                String password = getResources().getString(R.string.remoteTunnelPassword);
+//                String devKey = getResources().getString(R.string.remoteTunnelDeveloperKey);
+//                String serverID = getResources().getString(R.string.remoteTunnelServerID);
+//                // tunnels into remote server network
+//                sofaServerTunnel = new RemoteTunnel(username, password, devKey, serverID);
+//                mJoinButton.setText(R.string.button_connected);
+//                mJoinBackupButton.setEnabled(false);
+//            }
+//        });
 
-        //Join Surflab Backup PC Server
+        //Join Surflab Backup PC Server -- been set hidden as currently not used at all
         mJoinBackupButton.setVisibility(View.GONE);/// removed it since the button is confusing
         mJoinBackupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -393,7 +506,8 @@ public class MainActivity extends AppCompatActivity {
 
         //TIPSlite instruction image
         mInstructionImage = findViewById(R.id.instructionImage);
-//        mInstructionImage.setVisibility(View.GONE);
+
+        //Calibrate Button
         mCalibrateButton = findViewById(R.id.calibrate_button);
         mCalibrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -411,12 +525,12 @@ public class MainActivity extends AppCompatActivity {
                         mCalibrateButton.setEnabled(true);
                     }
                 },2000);
-                Log.d(TAG, "calibrated...");
+                Log.d(TAG_TIPS, "calibrated...");
 
             }
         });
 
-        //TIPSlite instruction button
+        //TIPSlite instruction button -> brings the image when clicked
         mQuestionButton = findViewById(R.id.questionButton);
         mQuestionButton.bringToFront();
         mQuestionButton.setOnClickListener(new View.OnClickListener() {
@@ -436,11 +550,73 @@ public class MainActivity extends AppCompatActivity {
         mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
         mVibrationStrength = mPrefs.getInt("vibration_str", 20);
         mVibrationBar.setProgress(mVibrationStrength);
+
+        ////Bluetooth
+        //not sure what this filter is used for -- copied from SPP
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        this.registerReceiver(_BTReceiver, filter);
+        //Add the bluetooth drop down list
+        List<String> BTNames = new ArrayList<String>();
+        BTNames.add("Choose Your Device Here");
+        BTlist = findViewById(R.id.spinner_bt);
+        mAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mAdapter.isEnabled())
+        {
+            //Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        else {
+            Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
+
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                if (device.getBluetoothClass().getMajorDeviceClass() == BluetoothClass.Device.Major.COMPUTER) {
+                    String deviceName = device.getName();
+                    String deviceHardwareAddress = device.getAddress(); // MAC address
+
+                    BTNames.add(deviceName + ":" + deviceHardwareAddress);
+                    Log.d(TAG_BT, "Device Name: " + deviceName);
+                    Log.d(TAG_BT, "Device Addr: " + deviceHardwareAddress);
+                    Log.d(TAG_BT, "Device Class ID: " + device.getBluetoothClass().getMajorDeviceClass());
+                }
+            }
+
+            ArrayAdapter<String> btDataAdapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item,
+                    BTNames);
+
+            // attaching data adapter to spinner
+            BTlist.setAdapter(btDataAdapter);
+        }
+        //Bluetooth Connect
+        mJoinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mJoinButton.setText(R.string.button_joining);
+                mJoinButton.setEnabled(false);
+                String BT_text = BTlist.getSelectedItem().toString();
+
+                Log.d(TAG_BT, "************************");
+                Log.d(TAG_BT, "************************");
+                Log.d(TAG_BT, "************************");
+                Log.d(TAG_BT, "Bluetooth CONNECT TO: " + BT_text);
+
+                final String BT_address = BT_text.substring(BT_text.length() - 17);
+
+                ConnectToDeviceByAddress(BT_address);
+                mJoinButton.setText(R.string.button_connected);
+                mJoinBackupButton.setEnabled(false);
+            }
+        });
+
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
-            Log.d(TAG, "Volume Down...");
+            Log.d(TAG_TIPS, "Volume Down...");
             mButtonState = 2;
         }
         return true;
@@ -448,7 +624,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
-            Log.d(TAG, "Volume Down released...");
+            Log.d(TAG_TIPS, "Volume Down released...");
             mButtonState = 0;
         }
         return true;
@@ -464,7 +640,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mTIPSSensor.start();
-        Log.d(TAG, "onResume");
+        Log.d(TAG_TIPS, "onResume");
     }
 
     @Override
@@ -473,7 +649,7 @@ public class MainActivity extends AppCompatActivity {
         if(mStreamActive) {
             stopStreaming();
         }
-        Log.d(TAG, "onPause");
+        Log.d(TAG_TIPS, "onPause");
     }
 
     @Override
@@ -482,18 +658,18 @@ public class MainActivity extends AppCompatActivity {
         if(mStreamActive) {
             stopStreaming();
         }
-        Log.d(TAG, "onStop");
+        Log.d(TAG_TIPS, "onStop");
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestart");
+        Log.d(TAG_TIPS, "onRestart");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
+        Log.d(TAG_TIPS, "onDestroy");
     }
 }

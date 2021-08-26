@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0FFFFFFF"
+    android:visibility="visible"
     tools:context=".MainActivity">
 
     <Button
@@ -75,7 +76,7 @@
 
     <EditText
         android:id="@+id/skip_send_delay"
-        android:layout_width="100dp"
+        android:layout_width="40dp"
         android:layout_height="40dp"
         android:autofillHints=""
         android:ems="10"
@@ -246,16 +247,16 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <!--    <ImageView-->
-<!--        android:id="@+id/instructionImage"-->
-<!--        android:layout_width="413dp"-->
-<!--        android:layout_height="542dp"-->
-<!--        android:translationZ="10dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/touch_view"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/join_button"-->
-<!--        app:layout_constraintVertical_bias="0.836"-->
-<!--        app:srcCompat="@drawable/instruction" />-->
+    <!--        android:id="@+id/instructionImage"-->
+    <!--        android:layout_width="413dp"-->
+    <!--        android:layout_height="542dp"-->
+    <!--        android:translationZ="10dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/touch_view"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/join_button"-->
+    <!--        app:layout_constraintVertical_bias="0.836"-->
+    <!--        app:srcCompat="@drawable/instruction" />-->
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/instructionImage"
@@ -283,6 +284,7 @@
         android:text="click for instruction"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/questionButton"
         app:layout_constraintEnd_toStartOf="@+id/questionButton"
         app:layout_constraintHorizontal_bias="0.98"
@@ -315,5 +317,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/small_questionmark" />
+
+    <Spinner
+        android:id="@+id/spinner_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableRow"
+        app:layout_constraintEnd_toStartOf="@+id/questionButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
