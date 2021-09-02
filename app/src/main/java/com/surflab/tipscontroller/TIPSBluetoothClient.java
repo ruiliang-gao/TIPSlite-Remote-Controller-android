@@ -13,6 +13,7 @@ public class TIPSBluetoothClient implements Runnable {
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
+    public boolean buzzReceived = false; //true if received 'buzz' sent from SOFA
 
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread worker;
@@ -55,11 +56,15 @@ public class TIPSBluetoothClient implements Runnable {
             try {
                 // Read from the InputStream
                 bytes = mmInStream.available();
+                //Log.d("TIPS bluetooth client ","check " + bytes);
                 if(bytes != 0)
                 {
-                    SystemClock.sleep(50); //pause and wait for rest of data. Adjust this depending on your sending speed.
+
+                    SystemClock.sleep(10); //pause and wait for rest of data. Adjust this depending on your sending speed.
                     bytes = mmInStream.available(); // how many bytes are ready to be read?
                     bytes = mmInStream.read(buffer, 0, bytes); // record how many bytes we actually read
+                    //Log.d("TIPS bluetooth client ","received "+ bytes);
+                    buzzReceived = true;
 
                 }
             } catch (IOException e) {

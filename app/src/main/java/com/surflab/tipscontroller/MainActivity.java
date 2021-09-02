@@ -203,6 +203,16 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 mConnectedThread.write(jsonObj.toString());
+
+                //check buzz messages and handle vibration
+                if(mConnectedThread.buzzReceived){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mSysVibrator.vibrate(VibrationEffect.createOneShot(200, mVibrationStrength/*VibrationEffect.DEFAULT_AMPLITUDE*/));
+                    } else { //deprecated in API 26
+                        mSysVibrator.vibrate(200);
+                    }
+                    mConnectedThread.buzzReceived = false;
+                }
             }
 
         }
