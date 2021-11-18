@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
 //                        mRotVec[2].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x3));
 //                        mRotVec[3].setText(String.format(Locale.ENGLISH,"%.3f", mQuat.x0));
                     }
-
+                    //start streaming the sensor data
                     if(mStreamActive && mTouchView.isOnTouch) {
                         //Wrap up the sensor message in format (id, button, motion, orientation)
                         mMotionStateY = (float)mTouchView.motionY;
@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mInstructionText;
     private TIPSTouchView mTouchView;
     private ImageView mInstructionImage;
+    private ImageView mCenterImage;
     private ImageButton mQuestionButton;
     /// Streaming status
     private static boolean mStreamActive = false;   //true = streaming
@@ -426,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
         mTIPSSensor = new TIPSSensor();
 
         mStreamStatus = findViewById(R.id.textViewStreamState);
+        mStreamStatus.setTextColor(Color.RED);
         mStreamStatus.setText(R.string.calibrate_status_init);
         mInstructionText = findViewById(R.id.textInstruction);
         mInstructionText.setTextColor(Color.DKGRAY);
@@ -439,6 +441,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mVibrationStrength = progress;
+                ///update the saved info
                 mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putInt("vibration_str", progress);
@@ -465,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         mStreamActive = true;
                         mStartButton.setText(R.string.button_stop);
+                        mCenterImage.setVisibility(View.INVISIBLE);
                     }
                 }
                 else{
@@ -516,6 +520,9 @@ public class MainActivity extends AppCompatActivity {
 
         //TIPSlite instruction image
         mInstructionImage = findViewById(R.id.instructionImage);
+        //TIPSlite center TouchMe image
+        mCenterImage = findViewById(R.id.centerImage);
+        mCenterImage.setVisibility(View.INVISIBLE);
 
         //Calibrate Button
         mCalibrateButton = findViewById(R.id.calibrate_button);
@@ -526,8 +533,10 @@ public class MainActivity extends AppCompatActivity {
                 mTIPSSensor.mCalibrated = true;
                 mButtonState = 3;
                 mCalibrateButton.setText(R.string.button_recalibrate);
+                mStreamStatus.setTextColor(Color.rgb(120,180,0));
                 mStreamStatus.setText(R.string.calibrate_status_done);
                 mInstructionImage.setVisibility(View.INVISIBLE);
+                mCenterImage.setVisibility(View.VISIBLE);
                 mCalibrateButton.setEnabled(false);
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -583,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
             //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         else {
-            BTNames.add("Choose Your Device Here");
+            //BTNames.add("Choose Your Device Here");
             Set<BluetoothDevice> pairedDevices = mAdapter.getBondedDevices();
 
             // There are paired devices. Get the name and address of each paired device.
@@ -598,6 +607,16 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG_BT, "Device Class ID: " + device.getBluetoothClass().getMajorDeviceClass());
                 }
             }
+
+            /// retrieve the saved BT text from mPrefs
+            mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
+            String savedBT = mPrefs.getString("bluetooth_text", "Choose Your Device Here");
+            if(BTNames.contains(savedBT)) {
+                BTNames.remove(savedBT);
+                BTNames.add(0, savedBT);
+            }
+            else
+                BTNames.add(0, "Choose Your Device Here");
         }
         ArrayAdapter<String> btDataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item,
@@ -611,6 +630,13 @@ public class MainActivity extends AppCompatActivity {
                 mJoinButton.setText(R.string.button_joining);
                 mJoinButton.setEnabled(false);
                 String BT_text = BTlist.getSelectedItem().toString();
+
+                ///update the saved info
+                mPrefs = getSharedPreferences("AppInfo", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putString("bluetooth_text", BT_text);
+                editor.apply();
+                Log.d(TAG_BT, "Saved Bluetooth text:" + BT_text);
 
                 Log.d(TAG_BT, "************************");
                 Log.d(TAG_BT, "************************");
